@@ -1,6 +1,5 @@
 package models;
 
-
 public class CifradoAtbash {
 
     public String cifrar(String texto) {

@@ -26,6 +26,9 @@ public class VentanaPrincipal extends JFrame {
         private static final Font FUENTE_AREA = new Font("Consolas", Font.PLAIN, 12);
 
         private JTextField txtPalabra;
+        private JTextField txtClave;
+        private JLabel lblClave;
+        private JPanel panelClave;
         private JTextArea txtCifrado;
         private JTextArea txtDescifrado;
         private JTextArea txtExplicacion;
@@ -42,14 +45,14 @@ public class VentanaPrincipal extends JFrame {
 
         private ControladorCifrado controlador;
         private String metodoSeleccionado = "CESAR";
-
+        private JButton btnSeleccionado;
 
         public VentanaPrincipal() {
                 controlador = new ControladorCifrado();
 
                 setTitle("Sistema de Cifrados Clásicos");
-                setSize(900, 560);
-                setMinimumSize(new Dimension(800, 520));
+                setSize(900, 580);
+                setMinimumSize(new Dimension(800, 540));
                 setLocationRelativeTo(null);
                 setDefaultCloseOperation(EXIT_ON_CLOSE);
                 getContentPane().setBackground(COLOR_FONDO);
@@ -59,6 +62,8 @@ public class VentanaPrincipal extends JFrame {
                 add(crearPanelCentral(), BorderLayout.CENTER);
 
                 configurarAcciones();
+                marcarSeleccionado(btnCesar);
+                actualizarPanelClave("CESAR");
         }
 
         // Panel superior
@@ -68,7 +73,7 @@ public class VentanaPrincipal extends JFrame {
                 panel.setBackground(COLOR_FONDO);
                 panel.setBorder(new EmptyBorder(18, 24, 8, 24));
 
-                // Fila 1 – campo de entrada
+                // Fila 1
                 JPanel filaEntrada = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 4));
                 filaEntrada.setOpaque(false);
 
@@ -76,19 +81,31 @@ public class VentanaPrincipal extends JFrame {
                 lblPalabra.setFont(FUENTE_LABEL);
                 lblPalabra.setForeground(new Color(55, 65, 81));
 
-                txtPalabra = new JTextField(28);
-                txtPalabra.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-                txtPalabra.setBorder(BorderFactory.createCompoundBorder(
-                                BorderFactory.createLineBorder(COLOR_BORDE, 1, true),
-                                new EmptyBorder(6, 10, 6, 10)));
-                txtPalabra.setBackground(COLOR_PANEL);
+                txtPalabra = new JTextField(24);
+                estilizarCampo(txtPalabra, COLOR_BORDE);
 
                 filaEntrada.add(lblPalabra);
                 filaEntrada.add(txtPalabra);
+
+                panelClave = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+                panelClave.setOpaque(false);
+
+                lblClave = new JLabel("CLAVE:");
+                lblClave.setFont(FUENTE_LABEL);
+                lblClave.setForeground(new Color(55, 65, 81));
+
+                txtClave = new JTextField(10);
+                estilizarCampo(txtClave, COLOR_BORDE);
+
+                panelClave.add(lblClave);
+                panelClave.add(txtClave);
+                panelClave.setVisible(false);
+
+                filaEntrada.add(panelClave);
                 panel.add(filaEntrada);
                 panel.add(Box.createVerticalStrut(10));
 
-                // Fila 2 – botones de método
+                // Fila 2
                 JPanel filaBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 4));
                 filaBotones.setOpaque(false);
 
@@ -106,7 +123,7 @@ public class VentanaPrincipal extends JFrame {
                 panel.add(filaBotones);
                 panel.add(Box.createVerticalStrut(10));
 
-                // Fila 3 – explicación del método
+                // Fila 3
                 JPanel filaExp = new JPanel(new BorderLayout(0, 4));
                 filaExp.setOpaque(false);
 
@@ -133,7 +150,6 @@ public class VentanaPrincipal extends JFrame {
                 filaExp.add(scrollExp, BorderLayout.CENTER);
                 panel.add(filaExp);
 
-
                 panel.add(Box.createVerticalStrut(10));
                 JSeparator sep = new JSeparator();
                 sep.setForeground(COLOR_BORDE);
@@ -148,13 +164,8 @@ public class VentanaPrincipal extends JFrame {
                 panel.setBackground(COLOR_FONDO);
                 panel.setBorder(new EmptyBorder(14, 24, 20, 24));
 
-                // Columna izquierda – texto cifrado
                 panel.add(crearColumnaTexto("TEXTO CIFRADO", txtCifrado = new JTextArea()));
-
-                // Columna central – botones de acción
                 panel.add(crearColumnaBotones());
-
-                // Columna derecha – texto descifrado
                 panel.add(crearColumnaTexto("TEXTO DESCIFRADO", txtDescifrado = new JTextArea()));
 
                 return panel;
@@ -210,7 +221,6 @@ public class VentanaPrincipal extends JFrame {
                 return col;
         }
 
-        // Fábricas de botones
         private JButton crearBotonMetodo(String texto) {
                 JButton btn = new JButton(texto);
                 btn.setFont(FUENTE_BOTONES);
@@ -224,13 +234,17 @@ public class VentanaPrincipal extends JFrame {
 
                 btn.addMouseListener(new java.awt.event.MouseAdapter() {
                         public void mouseEntered(java.awt.event.MouseEvent e) {
-                                btn.setBackground(COLOR_PRIMARIO);
-                                btn.setForeground(COLOR_TEXTO_BLANCO);
+                                if (btn != btnSeleccionado) {
+                                        btn.setBackground(COLOR_PRIMARIO_OVER);
+                                        btn.setForeground(COLOR_TEXTO_BLANCO);
+                                }
                         }
 
                         public void mouseExited(java.awt.event.MouseEvent e) {
-                                btn.setBackground(COLOR_PANEL);
-                                btn.setForeground(COLOR_PRIMARIO);
+                                if (btn != btnSeleccionado) {
+                                        btn.setBackground(COLOR_PANEL);
+                                        btn.setForeground(COLOR_PRIMARIO);
+                                }
                         }
                 });
                 return btn;
@@ -272,12 +286,14 @@ public class VentanaPrincipal extends JFrame {
                                 "Cifrado Playfair: usa una matriz 5×5 creada con una clave y cifra las letras en pares."));
 
                 btnCifrar.addActionListener(e -> {
-                        String resultado = controlador.cifrar(metodoSeleccionado, txtPalabra.getText());
+                        String resultado = controlador.cifrar(
+                                        metodoSeleccionado, txtPalabra.getText(), txtClave.getText());
                         txtCifrado.setText(resultado);
                 });
 
                 btnDescifrar.addActionListener(e -> {
-                        String resultado = controlador.descifrar(metodoSeleccionado, txtCifrado.getText());
+                        String resultado = controlador.descifrar(
+                                        metodoSeleccionado, txtCifrado.getText(), txtClave.getText());
                         txtDescifrado.setText(resultado);
                 });
 
@@ -285,12 +301,72 @@ public class VentanaPrincipal extends JFrame {
                         txtPalabra.setText("");
                         txtCifrado.setText("");
                         txtDescifrado.setText("");
+                        // Restaurar clave por defecto según el método activo
+                        actualizarPanelClave(metodoSeleccionado);
                         txtPalabra.requestFocus();
                 });
+        }
+
+        private void marcarSeleccionado(JButton nuevo) {
+                if (btnSeleccionado != null) {
+                        btnSeleccionado.setBackground(COLOR_PANEL);
+                        btnSeleccionado.setForeground(COLOR_PRIMARIO);
+                }
+                btnSeleccionado = nuevo;
+                btnSeleccionado.setBackground(COLOR_PRIMARIO);
+                btnSeleccionado.setForeground(COLOR_TEXTO_BLANCO);
         }
 
         private void seleccionarMetodo(String metodo, String explicacion) {
                 metodoSeleccionado = metodo;
                 txtExplicacion.setText(explicacion);
+                actualizarPanelClave(metodo);
+                JButton btn = switch (metodo) {
+                        case "CESAR" -> btnCesar;
+                        case "ATBASH" -> btnAtbash;
+                        case "VIGENERE" -> btnVigenere;
+                        case "RAIL" -> btnRailFence;
+                        case "PLAYFAIR" -> btnPlayfair;
+                        default -> null;
+                };
+                if (btn != null)
+                        marcarSeleccionado(btn);
+        }
+
+        private void actualizarPanelClave(String metodo) {
+                switch (metodo) {
+                        case "VIGENERE":
+                                lblClave.setText("CLAVE :");
+                                txtClave.setText("CLAVE");
+                                panelClave.setVisible(true);
+                                break;
+                        case "PLAYFAIR":
+                                lblClave.setText("CLAVE :");
+                                txtClave.setText("CLAVE");
+                                panelClave.setVisible(true);
+                                break;
+                        case "RAIL":
+                                lblClave.setText("NÚMERO DE RIELES:");
+                                txtClave.setText("3");
+                                panelClave.setVisible(true);
+                                break;
+                        default:
+                                panelClave.setVisible(false);
+                                txtClave.setText("");
+                                break;
+                }
+
+                if (panelClave.getParent() != null) {
+                        panelClave.getParent().revalidate();
+                        panelClave.getParent().repaint();
+                }
+        }
+
+        private void estilizarCampo(JTextField campo, Color colorBorde) {
+                campo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+                campo.setBorder(BorderFactory.createCompoundBorder(
+                                BorderFactory.createLineBorder(colorBorde, 1, true),
+                                new EmptyBorder(6, 10, 6, 10)));
+                campo.setBackground(COLOR_PANEL);
         }
 }

@@ -38,7 +38,7 @@ public class VentanaPrincipal extends JFrame {
 
         JPanel panelSuperior = new JPanel(new GridLayout(3, 1));
 
-        // FILA 1
+
         JPanel fila1 = new JPanel();
 
         fila1.add(new JLabel("ESCRIBA SU PALABRA:"));
@@ -48,7 +48,7 @@ public class VentanaPrincipal extends JFrame {
 
         panelSuperior.add(fila1);
 
-        // FILA 2
+
         JPanel fila2 = new JPanel();
 
         btnCesar = new JButton("CESAR");
@@ -65,7 +65,7 @@ public class VentanaPrincipal extends JFrame {
 
         panelSuperior.add(fila2);
 
-        // FILA 3
+
         JPanel fila3 = new JPanel(new BorderLayout());
 
         txtExplicacion = new JTextArea(2, 40);
@@ -79,6 +79,7 @@ public class VentanaPrincipal extends JFrame {
         add(panelSuperior, BorderLayout.NORTH);
 
         // PANEL CENTRAL
+
         JPanel panelCentral = new JPanel(new GridLayout(1, 3));
 
         txtCifrado = new JTextArea();
@@ -86,10 +87,15 @@ public class VentanaPrincipal extends JFrame {
 
         panelCentral.add(new JScrollPane(txtCifrado));
 
-        JPanel panelBotones = new JPanel(new GridLayout(2, 1));
+
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(null);
 
         btnCifrar = new JButton("← CIFRAR ←");
         btnDescifrar = new JButton("→ DESCIFRAR →");
+
+        btnCifrar.setBounds(60, 80, 140, 40);
+        btnDescifrar.setBounds(60, 140, 140, 40);
 
         panelBotones.add(btnCifrar);
         panelBotones.add(btnDescifrar);
@@ -100,7 +106,7 @@ public class VentanaPrincipal extends JFrame {
 
         add(panelCentral, BorderLayout.CENTER);
 
-        // SELECCION
+
 
         btnCesar.addActionListener(e -> seleccionarMetodo("CESAR",
                 "Cifrado Cesar: desplaza cada letra del texto un número fijo de posiciones en el alfabeto."));
@@ -117,7 +123,6 @@ public class VentanaPrincipal extends JFrame {
         btnPlayfair.addActionListener(e -> seleccionarMetodo("PLAYFAIR",
                 "Cifrado Playfair: usa una matriz 5x5 creada con una clave y cifra las letras en pares."));
 
-        // CIFRAR
 
         btnCifrar.addActionListener(e -> {
 
@@ -129,7 +134,6 @@ public class VentanaPrincipal extends JFrame {
 
         });
 
-        // EVENTO DESCIFRAR
 
         btnDescifrar.addActionListener(e -> {
 

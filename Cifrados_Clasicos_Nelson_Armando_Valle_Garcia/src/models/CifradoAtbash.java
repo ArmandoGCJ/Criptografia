@@ -1,29 +1,25 @@
 package models;
 
+
 public class CifradoAtbash {
 
-    public String cifrar(String texto) {
 
+    public String cifrar(String texto, String alfabeto) {
+
+        int n = alfabeto.length();
         StringBuilder resultado = new StringBuilder();
 
-        for (char c : texto.toUpperCase().toCharArray()) {
+        for (char c : texto.toCharArray()) {
 
-            if (Character.isLetter(c)) {
+            int idx = Alfabeto.indexOf(c, alfabeto);
 
-                char nuevo = (char) ('Z' - (c - 'A'));
-
-                resultado.append(nuevo);
-
+            if (idx >= 0) {
+                resultado.append(Alfabeto.charAt(n - 1 - idx, alfabeto));
             } else {
-
                 resultado.append(c);
-
             }
-
         }
 
         return resultado.toString();
-
     }
-
 }

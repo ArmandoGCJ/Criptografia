@@ -2,75 +2,59 @@ package models;
 
 public class CifradoVigenere {
 
-    public String cifrar(String texto, String clave) {
+    public String cifrar(String texto, String clave, String alfabeto) {
 
-        texto = texto.toUpperCase();
-        clave = clave.toUpperCase();
-
+        int n = alfabeto.length();
         StringBuilder resultado = new StringBuilder();
-
         int j = 0;
 
         for (int i = 0; i < texto.length(); i++) {
 
             char c = texto.charAt(i);
+            int idxC = Alfabeto.indexOf(c, alfabeto);
 
-            if (Character.isLetter(c)) {
+            if (idxC >= 0) {
 
-                int desplazamiento = clave.charAt(j % clave.length()) - 'A';
+                char claveChar = clave.charAt(j % clave.length());
+                int idxK = Alfabeto.indexOf(claveChar, alfabeto);
+                if (idxK < 0) idxK = 0;
 
-                char nuevo = (char) ((c - 'A' + desplazamiento) % 26 + 'A');
-
-                resultado.append(nuevo);
-
+                resultado.append(Alfabeto.charAt((idxC + idxK) % n, alfabeto));
                 j++;
 
             } else {
-
                 resultado.append(c);
-
             }
-
         }
 
         return resultado.toString();
-
     }
 
-    public String descifrar(String texto, String clave) {
+    public String descifrar(String texto, String clave, String alfabeto) {
 
-        texto = texto.toUpperCase();
-        clave = clave.toUpperCase();
-
+        int n = alfabeto.length();
         StringBuilder resultado = new StringBuilder();
-
         int j = 0;
 
         for (int i = 0; i < texto.length(); i++) {
 
             char c = texto.charAt(i);
+            int idxC = Alfabeto.indexOf(c, alfabeto);
 
-            if (Character.isLetter(c)) {
+            if (idxC >= 0) {
 
-                int desplazamiento = clave.charAt(j % clave.length()) - 'A';
+                char claveChar = clave.charAt(j % clave.length());
+                int idxK = Alfabeto.indexOf(claveChar, alfabeto);
+                if (idxK < 0) idxK = 0;
 
-                char nuevo = (char) ((c - 'A' - desplazamiento + 26) % 26 + 'A');
-
-                resultado.append(nuevo);
-
+                resultado.append(Alfabeto.charAt((idxC - idxK + n) % n, alfabeto));
                 j++;
 
             } else {
-
                 resultado.append(c);
-
             }
-
         }
 
         return resultado.toString();
-
     }
-
 }
-

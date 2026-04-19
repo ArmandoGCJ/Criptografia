@@ -19,6 +19,8 @@ public class VentanaPrincipal extends JFrame {
         private static final Color COLOR_TEXTO_BLANCO = Color.WHITE;
         private static final Color COLOR_BORDE = new Color(210, 215, 225);
         private static final Color COLOR_AREA_BG = new Color(250, 251, 253);
+        private static final Color COLOR_IDIOMA      = new Color(217, 119,   6);
+        private static final Color COLOR_IDIOMA_OVER = new Color(180,  90,   0);
 
         private static final Font FUENTE_TITULO = new Font("Segoe UI", Font.BOLD, 13);
         private static final Font FUENTE_BOTONES = new Font("Segoe UI", Font.BOLD, 12);
@@ -47,6 +49,10 @@ public class VentanaPrincipal extends JFrame {
         private String metodoSeleccionado = "CESAR";
         private JButton btnSeleccionado;
 
+        private JButton btnES;
+        private JButton btnEN;
+        private JButton btnIdiomaSeleccionado;
+
         public VentanaPrincipal() {
                 controlador = new ControladorCifrado();
 
@@ -64,6 +70,8 @@ public class VentanaPrincipal extends JFrame {
                 configurarAcciones();
                 marcarSeleccionado(btnCesar);
                 actualizarPanelClave("CESAR");
+                marcarIdiomaSeleccionado(btnES);
+                controlador.setIdioma("ES");
         }
 
         // Panel superior
@@ -120,6 +128,22 @@ public class VentanaPrincipal extends JFrame {
                 filaBotones.add(btnVigenere);
                 filaBotones.add(btnRailFence);
                 filaBotones.add(btnPlayfair);
+
+                JPanel sepVer = new JPanel();
+                sepVer.setPreferredSize(new Dimension(2, 28));
+                sepVer.setBackground(COLOR_BORDE);
+                filaBotones.add(sepVer);
+
+                JLabel lblIdioma = new JLabel("IDIOMA:");
+                lblIdioma.setFont(FUENTE_LABEL);
+                lblIdioma.setForeground(new Color(55, 65, 81));
+                filaBotones.add(lblIdioma);
+
+                btnES = crearBotonIdioma("ES");
+                btnEN = crearBotonIdioma("EN");
+                filaBotones.add(btnES);
+                filaBotones.add(btnEN);
+
                 panel.add(filaBotones);
                 panel.add(Box.createVerticalStrut(10));
 
@@ -275,7 +299,7 @@ public class VentanaPrincipal extends JFrame {
         // Acciones
         private void configurarAcciones() {
                 btnCesar.addActionListener(e -> seleccionarMetodo("CESAR",
-                                "Cifrado César: desplaza cada letra del texto un número fijo de posiciones en el alfabeto."));
+                                "Cifrado César: desplaza cada letra del texto un número fijo de posiciones en el alfabeto. Puede cambiar el número de desplazamiento en el campo."));
                 btnAtbash.addActionListener(e -> seleccionarMetodo("ATBASH",
                                 "Cifrado Atbash: sustituye cada letra por su opuesta en el alfabeto invertido."));
                 btnVigenere.addActionListener(e -> seleccionarMetodo("VIGENERE",
@@ -301,10 +325,12 @@ public class VentanaPrincipal extends JFrame {
                         txtPalabra.setText("");
                         txtCifrado.setText("");
                         txtDescifrado.setText("");
-                        // Restaurar clave por defecto según el método activo
                         actualizarPanelClave(metodoSeleccionado);
                         txtPalabra.requestFocus();
                 });
+
+                btnES.addActionListener(e -> cambiarIdioma("ES"));
+                btnEN.addActionListener(e -> cambiarIdioma("EN"));
         }
 
         private void marcarSeleccionado(JButton nuevo) {
@@ -335,6 +361,11 @@ public class VentanaPrincipal extends JFrame {
 
         private void actualizarPanelClave(String metodo) {
                 switch (metodo) {
+                        case "CESAR":
+                                lblClave.setText("DESPLAZAMIENTO:");
+                                txtClave.setText("3");
+                                panelClave.setVisible(true);
+                                break;
                         case "VIGENERE":
                                 lblClave.setText("CLAVE :");
                                 txtClave.setText("CLAVE");
@@ -368,5 +399,53 @@ public class VentanaPrincipal extends JFrame {
                                 BorderFactory.createLineBorder(colorBorde, 1, true),
                                 new EmptyBorder(6, 10, 6, 10)));
                 campo.setBackground(COLOR_PANEL);
+        }
+
+
+        private JButton crearBotonIdioma(String texto) {
+                JButton btn = new JButton(texto);
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 11));
+                btn.setForeground(COLOR_IDIOMA);
+                btn.setBackground(COLOR_PANEL);
+                btn.setFocusPainted(false);
+                btn.setOpaque(true);
+                btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btn.setBorder(BorderFactory.createCompoundBorder(
+                                BorderFactory.createLineBorder(COLOR_IDIOMA, 2, true),
+                                new EmptyBorder(5, 12, 5, 12)));
+
+                btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                        public void mouseEntered(java.awt.event.MouseEvent e) {
+                                if (btn != btnIdiomaSeleccionado) {
+                                        btn.setBackground(COLOR_IDIOMA_OVER);
+                                        btn.setForeground(COLOR_TEXTO_BLANCO);
+                                }
+                        }
+                        public void mouseExited(java.awt.event.MouseEvent e) {
+                                if (btn != btnIdiomaSeleccionado) {
+                                        btn.setBackground(COLOR_PANEL);
+                                        btn.setForeground(COLOR_IDIOMA);
+                                }
+                        }
+                });
+                return btn;
+        }
+
+        private void marcarIdiomaSeleccionado(JButton nuevo) {
+                if (btnIdiomaSeleccionado != null) {
+                        btnIdiomaSeleccionado.setBackground(COLOR_PANEL);
+                        btnIdiomaSeleccionado.setForeground(COLOR_IDIOMA);
+                }
+                btnIdiomaSeleccionado = nuevo;
+                btnIdiomaSeleccionado.setBackground(COLOR_IDIOMA);
+                btnIdiomaSeleccionado.setForeground(COLOR_TEXTO_BLANCO);
+        }
+
+
+        private void cambiarIdioma(String idioma) {
+                controlador.setIdioma(idioma);
+                txtCifrado.setText("");
+                txtDescifrado.setText("");
+                marcarIdiomaSeleccionado(idioma.equals("ES") ? btnES : btnEN);
         }
 }

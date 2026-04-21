@@ -1,4 +1,4 @@
-# Criptografia
+# Criptografía
 
 **Cifrado César**: Funciona con cualquier desplazamiento de 1 a n configurado directamente desde la interfaz, aplicando la operación módulo sobre el tamaño real del alfabeto activo (26 en inglés, 27 en español), lo que garantiza que ninguna letra quede fuera del rango válido.
 

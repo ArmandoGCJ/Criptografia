@@ -2,9 +2,26 @@ package models;
 
 public class CifradoRailFence {
 
+    private String normalizar(String texto) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : texto.toCharArray()) {
+            char n = Alfabeto.normalizar(c);
+
+            if ((n >= 'A' && n <= 'Z') || n == '\u00d1') {
+                sb.append(n);
+            }
+        }
+        return sb.toString();
+    }
+
     public String cifrar(String texto, int filas) {
 
-        if (filas == 1)
+        texto = normalizar(texto);
+
+        if (texto.isEmpty())
+            return texto;
+
+        if (filas <= 1 || filas >= texto.length())
             return texto;
 
         char[][] rail = new char[filas][texto.length()];
@@ -34,11 +51,17 @@ public class CifradoRailFence {
 
     public String descifrar(String texto, int filas) {
 
-        if (filas == 1)
+        texto = normalizar(texto);
+
+        if (texto.isEmpty())
+            return texto;
+
+        if (filas <= 1 || filas >= texto.length())
             return texto;
 
         char[][] rail = new char[filas][texto.length()];
 
+        // Fase 1
         boolean direccionAbajo = false;
         int fila = 0;
 
@@ -52,6 +75,7 @@ public class CifradoRailFence {
             fila += direccionAbajo ? 1 : -1;
         }
 
+        // Fase 2:
         int index = 0;
 
         for (int i = 0; i < filas; i++) {
@@ -62,6 +86,7 @@ public class CifradoRailFence {
             }
         }
 
+        // Fase 3
         StringBuilder resultado = new StringBuilder();
 
         direccionAbajo = false;
